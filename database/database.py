@@ -39,3 +39,11 @@ class Database:
     def get_user(self, telegram_id):
         sql = '''SELECT * FROM users WHERE telegram_id = ?'''
         return self.execute(sql, telegram_id, fetchone=True)
+
+    def get_lang(self, telegram_id):
+        sql = '''SELECT lang FROM users WHERE telegram_id = ?'''
+        return self.execute(sql, telegram_id, fetchone=True)[0]
+
+    def save_phone_number_and_full_name(self, full_name, phone_number, telegram_id):
+        sql = '''UPDATE users SET full_name = ?, phone_number = ? WHERE telegram_id = ?'''
+        self.execute(sql, full_name, phone_number, telegram_id, commit=True)
