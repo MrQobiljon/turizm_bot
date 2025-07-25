@@ -47,3 +47,28 @@ class Database:
     def save_phone_number_and_full_name(self, full_name, phone_number, telegram_id):
         sql = '''UPDATE users SET full_name = ?, phone_number = ? WHERE telegram_id = ?'''
         self.execute(sql, full_name, phone_number, telegram_id, commit=True)
+
+    def create_table_travels(self):
+        sql = '''CREATE TABLE IF NOT EXISTS travels(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            price INTEGER,
+            days INTEGER
+        )'''
+        self.execute(sql, commit=True)
+
+    def insert_travel(self, name, price, days):
+        sql = '''INSERT INTO travels(name, price, days) VALUES (?, ?, ?)'''
+        self.execute(sql, name, price, days, commit=True)
+
+    def create_table_images(self):
+        sql = '''CREATE TABLE IF NOT EXISTS images(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            image TEXT,
+            travel_id INTEGER REFERENCES travels(id)
+        )'''
+        self.execute(sql, commit=True)
+
+    def insert_image(self, image: str, travel_id: int):
+        sql = '''INSERT INTO images(image, travel_id) VALUES (?, ?)'''
+        self.execute(sql, image, travel_id, commit=True)

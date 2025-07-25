@@ -13,9 +13,14 @@ def reaction_to_lang(call: CallbackQuery):
     lang = call.data
     db.update_lang(lang, from_user_id)
     bot.delete_message(chat_id, call.message.message_id)
-    text = TEXTS[lang][1]
-    msg = bot.send_message(chat_id, text)
-    bot.register_next_step_handler(msg, get_name)
+    if None in db.get_user(from_user_id):
+        text = TEXTS[lang][1]
+        msg = bot.send_message(chat_id, text)
+        bot.register_next_step_handler(msg, get_name)
+    else:
+        text_buttons = TEXTS[lang][101]
+        text = TEXTS[lang][5]
+        bot.send_message(chat_id, text, reply_markup=make_buttons(text_buttons))
 
 
 def get_name(message: Message):

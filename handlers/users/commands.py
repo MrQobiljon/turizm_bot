@@ -26,4 +26,4 @@ def start(message: Message):
             bot.register_next_step_handler(msg, get_name)
         else:
             names_buttons = TEXTS[lang][101]
-            bot.send_message(chat_id, TEXTS[lang][4], reply_markup=make_buttons(names_buttons))
+            bot.send_message(chat_id, TEXTS[lang][4], reply_markup=make_buttons(names_buttons, admin_id=from_user_id))
