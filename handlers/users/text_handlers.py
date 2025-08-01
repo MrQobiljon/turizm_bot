@@ -2,7 +2,7 @@ from telebot.types import Message
 from data.loader import bot, db
 from config import TEXTS
 from keyboards.default import make_buttons
-from keyboards.inline import lang_buttons
+from keyboards.inline import lang_buttons, travels_buttons
 from .callbacks import get_name
 
 
@@ -17,6 +17,10 @@ def reaction_to_packages(message: Message):
         msg = bot.send_message(chat_id, text,
                                reply_markup=make_buttons(btn_texts, lang=lang, back=True))
         bot.register_next_step_handler(msg, get_settings)
+    elif message.text == TEXTS[lang][101][0]:
+        travels_list = db.select_travels(lang)
+        bot.send_message(chat_id, "-----------------",
+                         reply_markup=travels_buttons(travels_list))
 
 
 def get_settings(message: Message):

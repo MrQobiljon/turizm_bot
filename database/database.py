@@ -11,12 +11,14 @@ class Database:
             cursor.execute(sql, args)
 
             res = None
-            if commit:
-                db.commit()
-            elif fetchone:
+
+            if fetchone:
                 res = cursor.fetchone()
             elif fetchall:
                 res = cursor.fetchall()
+
+            if commit:
+                db.commit()
         return res
 
     def create_table_users(self):
@@ -51,15 +53,30 @@ class Database:
     def create_table_travels(self):
         sql = '''CREATE TABLE IF NOT EXISTS travels(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
+            name_uz TEXT,
+            name_en TEXT,
+            name_ru TEXT,
             price INTEGER,
             days INTEGER
         )'''
         self.execute(sql, commit=True)
 
-    def insert_travel(self, name, price, days):
-        sql = '''INSERT INTO travels(name, price, days) VALUES (?, ?, ?)'''
-        self.execute(sql, name, price, days, commit=True)
+    def drop_table_travels(self):
+        sql = '''DROP TABLE IF EXISTS travels'''
+        self.execute(sql, commit=True)
+
+    def insert_travel(self, name_uz, name_en, name_ru, price, days):
+        sql = '''INSERT INTO travels(name_uz, name_en, name_ru, price, days) VALUES (?, ?, ?, ?, ?)
+        RETURNING id'''
+        return self.execute(sql, name_uz, name_en, name_ru, price, days, commit=True, fetchone=True)[0]
+
+    def select_travels(self, lang):
+        sql = f'''SELECT id, name_{lang} FROM travels'''
+        return self.execute(sql, fetchall=True)
+
+    def select_travels_with_images(self, travel_id, lang):
+        sql = f'''SELECT travels.id, travels.name_{lang}, images.id, images.image FROM travels JOIN images ON images.travel_id = travels.id WHERE travels.id = ?'''
+        return self.execute(sql, travel_id, fetchall=True)
 
     def create_table_images(self):
         sql = '''CREATE TABLE IF NOT EXISTS images(
